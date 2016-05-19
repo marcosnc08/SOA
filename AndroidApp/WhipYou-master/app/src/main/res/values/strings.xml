@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WhipYou</string>
+    <string name="switch_button">Shake detection</string>
+    <string name="sensor_unsupported">Sensor is not supported</string>
+    <string name="helpinfo">Shake the phone</string>
+
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/marcoscomelli/Documents/SOA/AndroidApp/WhipYou-master/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="719d28e58f280075fba5d4b79dc39167366a73dc">
+        <dex dex="/Users/marcoscomelli/Documents/SOA/AndroidApp/WhipYou-master/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_305251d4dd8e1dbbd1f71414bde7d76c74adb255/classes.dex" />
+    </item>
+    <item
+        jar="/Users/marcoscomelli/Documents/SOA/AndroidApp/WhipYou-master/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="cbfae85e262b5479ea1e0405d25ac0341842a247">
+        <dex dex="/Users/marcoscomelli/Documents/SOA/AndroidApp/WhipYou-master/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_941e0f2183a26a85dece3edf5faeba03036145e9/classes.dex" />
+    </item>
+
+</items>
