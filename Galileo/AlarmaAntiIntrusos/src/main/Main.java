@@ -1,12 +1,11 @@
-package alarma.main;
+package main;
 
 import java.time.Duration;
 import java.time.Instant;
 
-import alarma.alarmaantiintrusos.AlarmaAntiIntrusos;
+import alarma.*;
 
 public class Main {
-	
     static {
         try {
             System.loadLibrary("mraajava");
@@ -26,22 +25,24 @@ public class Main {
 	final static int LEDROJO_PIN = 3;
 	final static int LEDVERDE_PIN = 4;
 	
-	final static long DEBOUNCE = 100;
+	final static long DEBOUNCE = 200;
 	
-	private static Instant tiempoBoton;
+	private static Instant tiempoBoton = Instant.now();
 
     public static void main(String argv[]) {
-		AlarmaAntiIntrusos alarma = new AlarmaAntiIntrusos();
+		Alarma alarma = new Alarma();
 		//tiempoBoton = Instant.now();
         while (true) {
         	alarma.readEstadoActualBotonActivacion();
-			if(alarma.getEstadoActualBotonActivacion() == HIGH && alarma.getEstadoAnteriorBotonActivacion() == LOW && Duration.between(Instant.now(), tiempoBoton).toMillis() > DEBOUNCE) {
+			if(alarma.getEstadoActualBotonActivacion() == HIGH && alarma.getEstadoAnteriorBotonActivacion() == LOW && Duration.between(tiempoBoton,Instant.now()).toMillis() > DEBOUNCE) {
 				try {
 					if(alarma.getAlarmaEncendida() == true) {
-						alarma.setAlarmaEncendida(false);
+						//alarma.setAlarmaEncendida(false);
+						alarma.desactivarAlarma();
 					}
 					else {
-						alarma.setAlarmaEncendida(true);
+						//alarma.setAlarmaEncendida(true);
+						alarma.activarAlarma();
 					}
 				} catch(InterruptedException ex) {
 					ex.printStackTrace();
@@ -54,10 +55,25 @@ public class Main {
 			alarma.intermitenciaLedVerde();
 			
 			while(alarma.getAlarmaEncendida() == true && alarma.getEstadoSensorMovimiento() == HIGH) {
-				alarma.sonarAlarma();
+				try {
+					alarma.sonarAlarma();
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+					System.err.println("Error while sleeping... (sonarAlarma)");
+					System.exit(1);
+				}
+				
 				alarma.readEstadoActualBotonActivacion();
-				if (alarma.getEstadoActualBotonActivacion() == HIGH  && alarma.getEstadoAnteriorBotonActivacion() == LOW && Duration.between(Instant.now(), tiempoBoton).toMillis() > DEBOUNCE) {
-					alarma.setAlarmaEncendida(false);
+				if (alarma.getEstadoActualBotonActivacion() == HIGH  && alarma.getEstadoAnteriorBotonActivacion() == LOW && Duration.between(tiempoBoton,Instant.now()).toMillis() > DEBOUNCE) {
+					try {
+						//alarma.setAlarmaEncendida(false);
+						alarma.desactivarAlarma();
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+						System.err.println("Error while sleeping... (setAlarmaEncendida)");
+						System.exit(1);
+					}
+					
 					tiempoBoton = Instant.now();
 				}
 				alarma.setEstadoAnteriorBotonActivacion();
