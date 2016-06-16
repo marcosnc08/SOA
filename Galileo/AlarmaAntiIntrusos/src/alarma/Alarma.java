@@ -3,18 +3,19 @@ package alarma;
 import java.time.Duration;
 import java.time.Instant;
 
-import mraa.Dir;
-import mraa.Gpio;
-import mraa.Result;
-import mraa.mraa;
+import mraa.*;
+import estados.Estados;
 
 public class Alarma {
 	/* Pines asociados a la placa Galileo */
+	final static int LEDROJO_PIN = 3;
+	final static int LEDVERDE_PIN = 4;
 	final static int BOTONACTIVACION_PIN = 7;
 	final static int SENSORMOVIMIENTO_PIN = 8;
 	final static int BUZZER_PIN = 9;
-	final static int LEDROJO_PIN = 3;
-	final static int LEDVERDE_PIN = 4;
+	//Analogicos
+	final static int SENSOR_TEMPERATURA = 4;
+	final static int SENSOR_GAS_PIN = 5;
 	
 	final static int DEFAULT_BUZZ_TONE = 255;
 	
@@ -30,18 +31,22 @@ public class Alarma {
 	private Gpio ledVerde;
 	private Gpio buzzer;
 	private Gpio sensorMovimiento;
+	private Aio sensorGas;
 	/* Instantes de Tiempo */
 	private Instant tiempoIntermitenciaLed;
 	private Instant tiempoActivacion;
 	
+	private Estados estadoAlarma;
 	/* Constructor */
 	public Alarma() {
-		
+		estadoAlarma = Estados.ALARMA_DESACTIVADA;
 		alarmaEncendida = false;
 		estadoActualBotonActivacion = 0;
 		estadoAnteriorBotonActivacion = 1;
+		estadoSensorMovimiento = 0;
 		tiempoIntermitenciaLed = Instant.now();
 		tiempoActivacion = Instant.now();
+		
 		/* Inicializacion de los objetos GPIO */
 		botonActivacion = new Gpio(BOTONACTIVACION_PIN);
         Result result = botonActivacion.dir(Dir.DIR_IN);
@@ -82,6 +87,14 @@ public class Alarma {
             mraa.printError(result);
             System.exit(1);
         }
+        
+        sensorGas = new Aio(SENSOR_GAS_PIN);
+        /*result = sensorGas.dir(Dir.DIR_IN);
+        if (result != Result.SUCCESS) {
+        	System.out.println("Error opening Sensor Gas GPIO");
+            mraa.printError(result);
+            System.exit(1);
+        }*/
 		
 		try {
 			buzz(500);
@@ -96,6 +109,13 @@ public class Alarma {
 	}
 	
 	/* Metodos */
+	
+	public Estados getEstado() {
+		return estadoAlarma;
+	}
+	public void setEstado(Estados e) {
+		estadoAlarma = e;
+	}
 	
 	public boolean getAlarmaEncendida() {
 		return alarmaEncendida;
@@ -120,14 +140,26 @@ public class Alarma {
 	public int getEstadoSensorMovimiento() {
 		return estadoSensorMovimiento;
 	}
-	/*
-	public void readEstadoSensorMovimiento() {
-		estadoSensorMovimiento = sensorMovimiento.read();
-	}*/
+	
+	public int readEstadoSensorMovimiento() {
+		if(estadoAlarma == Estados.ALARMA_ACTIVADA) {
+			estadoSensorMovimiento = sensorMovimiento.read();
+			System.out.println("Lectura del Estado del sensor: "+estadoSensorMovimiento);
+		}
+		else
+			estadoSensorMovimiento = 0;
+		return estadoSensorMovimiento;
+	}
+	
+	public float readEstadoSensorGas() {
+		return sensorGas.readFloat();
+	}
+	
 	public void activarAlarma() throws InterruptedException {
 		/* Activar Alarma */
 		//lock
 		alarmaEncendida = true;
+		estadoAlarma = Estados.ALARMA_ACTIVANDO;
 		//unlock
 		buzz(50);
 		buzz(50);
@@ -138,37 +170,13 @@ public class Alarma {
 	
 	public void desactivarAlarma() throws InterruptedException {
 		/* Desactivar Alarma */
-		sensorMovimiento.write(0);
+		estadoSensorMovimiento = 0;
 		alarmaEncendida = false;
-		//Thread.sleep(100);
+		estadoAlarma = Estados.ALARMA_DESACTIVADA;
 		buzz(200);
 		buzz(200);
 		ledVerde.write(0);
 		ledRojo.write(0);
-	}
-	
-	public void setAlarmaEncendida(boolean state) throws InterruptedException {
-		if(state == true) {
-			/* Activar Alarma */
-			//lock
-			alarmaEncendida = true;
-			//unlock
-			buzz(50);
-			buzz(50);
-			buzz(50);		
-			tiempoIntermitenciaLed = Instant.now();
-			tiempoActivacion = Instant.now();
-		}
-		else {
-			/* Desactivar Alarma */
-			sensorMovimiento.write(0);
-			alarmaEncendida = false;
-			//Thread.sleep(100);
-			buzz(200);
-			buzz(200);
-			ledVerde.write(0);
-			ledRojo.write(0);
-		}
 	}
 	
 	public void sonarAlarma() throws InterruptedException {
@@ -177,12 +185,12 @@ public class Alarma {
 	}
 	
 	public void intermitenciaLedVerde() {
-		if(alarmaEncendida == true) {
-			//long t = Duration.between(tiempoActivacion,Instant.now()).toMillis();
-			//System.out.println("Time: "+ t);
-			if(Duration.between(tiempoActivacion,Instant.now()).toMillis() > 5000) {
+		if(alarmaEncendida == true && estadoAlarma == Estados.ALARMA_ACTIVANDO) {
+			if(Duration.between(tiempoActivacion,Instant.now()).toMillis() > 10000) {
+				System.out.println("ACTIVACION DE ALARMA: FINALIZADA");
+				estadoAlarma = Estados.ALARMA_ACTIVADA;
+				estadoSensorMovimiento = 0;
 				ledVerde.write(1);
-				estadoSensorMovimiento = sensorMovimiento.read();
 			}
 			else {
 				if(Duration.between(tiempoIntermitenciaLed,Instant.now()).toMillis() > 100) {
