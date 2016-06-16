@@ -3,7 +3,7 @@ package main;
 import java.time.Duration;
 import java.time.Instant;
 
-import alarma.*;
+import alarma.Alarma;
 
 public class Main {
     static {
@@ -18,67 +18,98 @@ public class Main {
     }
 	final static int LOW = 0;
 	final static int HIGH = 1;
-
-    final static int BOTON_PIN = 7;
-	final static int SENSOR_PIN = 8;
-	final static int BUZZER_PIN = 9;
-	final static int LEDROJO_PIN = 3;
-	final static int LEDVERDE_PIN = 4;
+//  final static int BOTON_PIN = 7;
+//	final static int SENSOR_PIN = 8;
+//	final static int BUZZER_PIN = 9;
+//	final static int LEDROJO_PIN = 3;
+//	final static int LEDVERDE_PIN = 4;
+//	final static int SENSOR_GAS_PIN = 10;
 	
 	final static long DEBOUNCE = 200;
 	
 	private static Instant tiempoBoton = Instant.now();
-
+	private static boolean botonPresionado = false;
+	
     public static void main(String argv[]) {
 		Alarma alarma = new Alarma();
-		//tiempoBoton = Instant.now();
         while (true) {
+        	System.out.println("Sensor Gas: "+alarma.readEstadoSensorGas());
         	alarma.readEstadoActualBotonActivacion();
 			if(alarma.getEstadoActualBotonActivacion() == HIGH && alarma.getEstadoAnteriorBotonActivacion() == LOW && Duration.between(tiempoBoton,Instant.now()).toMillis() > DEBOUNCE) {
-				try {
-					if(alarma.getAlarmaEncendida() == true) {
-						//alarma.setAlarmaEncendida(false);
-						alarma.desactivarAlarma();
-					}
-					else {
-						//alarma.setAlarmaEncendida(true);
-						alarma.activarAlarma();
-					}
-				} catch(InterruptedException ex) {
-					ex.printStackTrace();
-					System.err.println("Error while sleeping... (setAlarmaEncendida)");
-					System.exit(1);
-				}
+				botonPresionado = true;
 				tiempoBoton = Instant.now();
 			}
-			
-			alarma.intermitenciaLedVerde();
-			
-			while(alarma.getAlarmaEncendida() == true && alarma.getEstadoSensorMovimiento() == HIGH) {
-				try {
-					alarma.sonarAlarma();
-				} catch (InterruptedException ex) {
-					ex.printStackTrace();
-					System.err.println("Error while sleeping... (sonarAlarma)");
-					System.exit(1);
-				}
-				
-				alarma.readEstadoActualBotonActivacion();
-				if (alarma.getEstadoActualBotonActivacion() == HIGH  && alarma.getEstadoAnteriorBotonActivacion() == LOW && Duration.between(tiempoBoton,Instant.now()).toMillis() > DEBOUNCE) {
-					try {
-						//alarma.setAlarmaEncendida(false);
-						alarma.desactivarAlarma();
-					} catch (InterruptedException ex) {
-						ex.printStackTrace();
-						System.err.println("Error while sleeping... (setAlarmaEncendida)");
-						System.exit(1);
+
+			switch(alarma.getEstado()) {
+				case ALARMA_ACTIVADA:
+					if(alarma.readEstadoSensorMovimiento() == HIGH) {
+						try {
+							alarma.sonarAlarma();
+						}
+						catch(InterruptedException ex) {
+							ex.printStackTrace();
+							System.err.println("Error while sleeping... (Main: ALARMA_ACTIVADA)");
+							System.exit(1);
+						}
+					}
+					if(botonPresionado) {
+						try {
+							alarma.desactivarAlarma();
+						} catch(InterruptedException ex) {
+							ex.printStackTrace();
+							System.err.println("Error while sleeping... (Main: ALARMA_ACTIVADA - botonPresionado)");
+							System.exit(1);
+						}
+					}
+					break;
+
+				case ALARMA_ACTIVANDO:
+					alarma.intermitenciaLedVerde();
+					break;
+
+				case ALARMA_DESACTIVADA:
+					if(botonPresionado) {
+						try {
+							alarma.activarAlarma();
+						} catch(InterruptedException ex) {
+							ex.printStackTrace();
+							System.err.println("Error while sleeping... (Main: ALARMA_DESACTIVADA)");
+							System.exit(1);
+						}
 					}
 					
-					tiempoBoton = Instant.now();
-				}
-				alarma.setEstadoAnteriorBotonActivacion();
+					break;
+
+				case ALARMA_SONANDO:
+					try {
+						alarma.sonarAlarma();
+					} catch(InterruptedException ex) {
+						ex.printStackTrace();
+						System.err.println("Error while sleeping... (Main: ALARMA_SONANDO)");
+						System.exit(1);
+					}
+					if(botonPresionado) {
+						try {
+							alarma.desactivarAlarma();
+						} catch(InterruptedException ex) {
+							ex.printStackTrace();
+							System.err.println("Error while sleeping... (Main: ALARMA_SONANDO - botonPresionado)");
+							System.exit(1);
+						}
+					}
+					break;
+
+				default: break;
 			}
+			botonPresionado = false;
 			alarma.setEstadoAnteriorBotonActivacion();
+			try {
+				Thread.sleep(1);
+			} catch(InterruptedException ex) {
+				ex.printStackTrace();
+				System.err.println("Error while sleeping... (Fin del While)");
+				System.exit(1);
+			}
         }
     }
 }
