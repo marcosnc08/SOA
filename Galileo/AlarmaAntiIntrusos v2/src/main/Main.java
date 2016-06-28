@@ -267,7 +267,7 @@ public class Main {
 	
 	private static void log(String message) {
 		if(logging.size() >= MAX_LOG_SIZE) {
-			logging.remove(1);
+			logging.remove(0);
 		}
 		Calendar cal = Calendar.getInstance();
 		String date = String.valueOf(cal.get(Calendar.DATE))+"/"+String.valueOf(cal.get(Calendar.MONTH)+1)+"/"+String.valueOf(cal.get(Calendar.YEAR))+", "+String.valueOf(cal.get(Calendar.HOUR_OF_DAY))+":"+String.valueOf(cal.get(Calendar.MINUTE))+":"+String.valueOf(cal.get(Calendar.SECOND))+" ";
