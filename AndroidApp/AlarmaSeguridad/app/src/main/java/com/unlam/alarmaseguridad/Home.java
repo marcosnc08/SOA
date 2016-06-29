@@ -2,7 +2,6 @@ package com.unlam.alarmaseguridad;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,7 +9,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -18,14 +16,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.Toast;
 
 
 public class Home extends Activity implements SensorEventListener {
     public static Home activity;
-    private SensorManager      sensor;
+    private SensorManager sensor;
+    private Sensor mProximity;
     private final static float ACC = 18;
     alarmStatuses alarmaActivada = alarmStatuses.ALARMA_DESACTIVADA;
     private BroadcastReceiver receiver;
@@ -45,6 +42,9 @@ public class Home extends Activity implements SensorEventListener {
 
         setContentView(R.layout.activity_home);
         sensor = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mProximity = sensor.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+
         final ImageButton btnActivar = (ImageButton)findViewById(R.id.btnActivar);
         final ImageButton btnPanic = (ImageButton)findViewById(R.id.btnPanic);
         final Button btnLogs = (Button)findViewById(R.id.btnLogs);
@@ -123,6 +123,7 @@ public class Home extends Activity implements SensorEventListener {
         super.onResume();
 
         registerSensor();
+        sensor.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -146,9 +147,9 @@ public class Home extends Activity implements SensorEventListener {
     @Override
     protected void onPause()
     {
-        unregisterSenser();
-
         super.onPause();
+        unregisterSenser();
+        sensor.unregisterListener(this);
     }
     private void unregisterSenser()
     {
@@ -164,13 +165,6 @@ public class Home extends Activity implements SensorEventListener {
     private void registerSensor()
     {
         sensor.registerListener(this, sensor.getDefaultSensor(1), 3);
-
-//        if (!done)
-//        {
-//            Toast.makeText(this, getResources().getString(R.string.sensor_unsupported), Toast.LENGTH_SHORT).show();
-//            switchButton.setChecked(false);
-//        }
-
         Log.i("sensor", "register");
     }
 
@@ -187,6 +181,12 @@ public class Home extends Activity implements SensorEventListener {
             {
                 switchState();
                 Log.i("sensor", "running");
+            }
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            if (event.values[0] == 0) {
+                switchState();
             }
         }
     }

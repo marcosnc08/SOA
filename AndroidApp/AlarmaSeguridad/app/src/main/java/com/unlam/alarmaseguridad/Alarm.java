@@ -9,7 +9,7 @@ public class Alarm {
     private boolean panic = false;
     private String temperature = "";
     private String gas = "";
-    private String logs;
+    private String logs = "";
 
     public boolean isChange() {
         return change;

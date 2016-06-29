@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Alarma</string>
+    <string name="logs">Logs</string>
+    <string name="nivel_de_gas">Nivel de gas</string>
 </resources>

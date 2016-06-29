@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Nivel de gas"
+        android:text="@string/nivel_de_gas"
         android:id="@+id/lblGas"
         android:layout_below="@+id/lblTemperature"
         android:layout_alignLeft="@+id/lblTemperature"
@@ -97,12 +97,10 @@
     <Button
         android:layout_width="@dimen/abc_action_bar_stacked_tab_max_width"
         android:layout_height="wrap_content"
-        android:text="Logs"
+        android:text="@string/logs"
         android:id="@+id/btnLogs"
-        android:layout_alignTop="@+id/btnPanic"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/btnActivar"
-        android:layout_toEndOf="@+id/btnActivar" />
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/btnActivar"
+        android:layout_alignBottom="@+id/btnPanic" />
 
 </RelativeLayout>
