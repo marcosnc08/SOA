@@ -1,43 +1,120 @@
 package com.unlam.alarmaseguridad;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class Home extends Activity implements SensorEventListener {
+    public static Home activity;
     private SensorManager      sensor;
     private final static float ACC = 18;
     alarmStatuses alarmaActivada = alarmStatuses.ALARMA_DESACTIVADA;
+    private BroadcastReceiver receiver;
+
     public enum alarmStatuses {
         ALARMA_ACTIVADA,
-        ALARMA_DESACTIVADA
+        ALARMA_DESACTIVADA,
+        ACTIVANDO_ALARMA,
+        DESACTIVANDO_ALARMA
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity=this;
+
+        StatusIntentService.startActionFoo(this);
+
         setContentView(R.layout.activity_home);
-        sensor = (SensorManager) getSystemService("sensor");
+        sensor = (SensorManager) getSystemService(SENSOR_SERVICE);
         final ImageButton btnActivar = (ImageButton)findViewById(R.id.btnActivar);
+        final ImageButton btnPanic = (ImageButton)findViewById(R.id.btnPanic);
+        final Button btnLogs = (Button)findViewById(R.id.btnLogs);
         setTxtAlarmStatus();
         registerSensor();
+        
         btnActivar.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 switchState();
             }
         });
+        btnPanic.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                btnPanicHandler();
+            }
+        });
+        btnLogs.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                btnLogsHandler();
+            }
+        });
 
+        final Home home = this;
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                home.SyncBtnAlarmaActivadaState();
+            }
+        };
+    }
+
+    private void btnLogsHandler() {
+        Intent intent = new Intent(Home.this, LogsActivity.class);
+        startActivity(intent);
+    }
+
+    public void SyncBtnAlarmaActivadaState() {
+        final ImageButton btnActivar = (ImageButton) findViewById(R.id.btnActivar);
+        final TextView txtTemperature = (TextView) findViewById(R.id.txtTemperature);
+        final TextView txtGas = (TextView) findViewById(R.id.txtGas);
+        Alarm alarm = Alarm.getInstance();
+
+        if (alarm.isRinging()) {
+            this.AlarmActivated();
+
+        } else {
+            if (alarm.isActivated()) {
+                btnActivar.setBackgroundResource(R.drawable.activaralarmaverde1);
+                alarmaActivada = alarmStatuses.ALARMA_ACTIVADA;
+            } else {
+                btnActivar.setBackgroundResource(R.drawable.activaralarma1);
+                alarmaActivada = alarmStatuses.ALARMA_DESACTIVADA;
+
+            }
+            setTxtAlarmStatus();
+        }
+
+        txtTemperature.setText(alarm.getTemperature());
+        txtGas.setText(alarm.getGas());
+    }
+
+    private void AlarmActivated(){
+        Intent intent = new Intent(Home.this, AlarmActivatedActivity.class);
+        startActivity(intent);
+
+    }
+    private void btnPanicHandler() {
+        Alarm.getInstance().setPanic(true);
+
+        Alarm.getInstance().setSendMessage(true);
     }
 
     @Override
@@ -46,13 +123,22 @@ public class Home extends Activity implements SensorEventListener {
         super.onResume();
 
         registerSensor();
-
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
+                new IntentFilter(StatusIntentService.CHECK_ALARM_INFO)
+        );
+    }
+
 
     @Override
     protected void onStop()
     {
         unregisterSenser();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
 
         super.onStop();
     }
@@ -69,7 +155,6 @@ public class Home extends Activity implements SensorEventListener {
         sensor.unregisterListener(this);
         Log.i("sensor", "unregister");
     }
-
 
     protected void setTxtAlarmStatus() {
         TextView txtAlarmStatus = (TextView)findViewById(R.id.alarmStatus);
@@ -113,15 +198,20 @@ public class Home extends Activity implements SensorEventListener {
     }
 
     private void switchState() {
+        Alarm alarm = Alarm.getInstance();
         final ImageButton btnActivar = (ImageButton)findViewById(R.id.btnActivar);
-        if(alarmaActivada == alarmStatuses.ALARMA_DESACTIVADA) {
-            btnActivar.setBackgroundResource(R.drawable.activaralarmaverde1);
-            alarmaActivada = alarmStatuses.ALARMA_ACTIVADA;
+        if(!alarm.isActivated()) {
+            //btnActivar.setBackgroundResource(R.drawable.activaralarmaverde1);
+            alarmaActivada = alarmStatuses.ACTIVANDO_ALARMA;
+
         }
         else {
-            btnActivar.setBackgroundResource(R.drawable.activaralarma1);
-            alarmaActivada = alarmStatuses.ALARMA_DESACTIVADA;
+            //btnActivar.setBackgroundResource(R.drawable.activaralarma1);
+            alarmaActivada = alarmStatuses.DESACTIVANDO_ALARMA;
+
         }
+
+        alarm.setChange(true);
         setTxtAlarmStatus();
     }
 }

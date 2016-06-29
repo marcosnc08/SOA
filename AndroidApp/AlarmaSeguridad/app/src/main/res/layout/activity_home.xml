@@ -28,22 +28,81 @@
         android:layout_alignParentRight="false" />
 
     <TextView
-        android:layout_width="@dimen/abc_action_bar_stacked_tab_max_width"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/alarmStatus"
         android:layout_gravity="center"
+        android:autoText="false"
+        android:textAlignment="center"
+        android:layout_marginTop="28dp"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/btnActivar"
-        android:layout_alignStart="@+id/btnActivar"
-        android:autoText="false" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageButton"
+        android:id="@+id/btnPanic"
         android:background="@drawable/panic"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Temperatura"
+        android:id="@+id/lblTemperature"
+        android:layout_marginTop="34dp"
+        android:layout_below="@+id/btnActivar"
+        android:layout_alignRight="@+id/btnPanic"
+        android:layout_alignEnd="@+id/btnPanic"
+        android:layout_marginRight="30dp"
+        android:layout_marginEnd="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Nivel de gas"
+        android:id="@+id/lblGas"
+        android:layout_below="@+id/lblTemperature"
+        android:layout_alignLeft="@+id/lblTemperature"
+        android:layout_alignStart="@+id/lblTemperature"
+        android:layout_marginTop="27dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/txtTemperature"
+        android:layout_alignTop="@+id/lblTemperature"
+        android:layout_toRightOf="@+id/btnPanic"
+        android:layout_toEndOf="@+id/btnPanic"
+        android:minWidth="@dimen/abc_action_bar_stacked_max_height"
+        android:background="@color/accent_material_dark" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/txtGas"
+        android:background="@color/accent_material_dark"
+        android:minWidth="@dimen/abc_action_bar_stacked_max_height"
+        android:layout_alignTop="@+id/lblGas"
+        android:layout_alignLeft="@+id/txtTemperature"
+        android:layout_alignStart="@+id/txtTemperature" />
+
+    <Button
+        android:layout_width="@dimen/abc_action_bar_stacked_tab_max_width"
+        android:layout_height="wrap_content"
+        android:text="Logs"
+        android:id="@+id/btnLogs"
+        android:layout_alignTop="@+id/btnPanic"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/btnActivar"
+        android:layout_toEndOf="@+id/btnActivar" />
 
 </RelativeLayout>

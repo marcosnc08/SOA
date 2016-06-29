@@ -1,12 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" >
-
-    <item
-        jar="/Users/marcoscomelli/Documents/SOA/AndroidApp/AlarmaSeguridad/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        revision="23.0.3"
-        sha1="25b6c72cee8b06e26963e8129877b56527239931">
-        <dex dex="/Users/marcoscomelli/Documents/SOA/AndroidApp/AlarmaSeguridad/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_691d8f4acb6dca8e7eb45c09e52848ffdc795a6e/classes.dex" />
-    </item>
-
-</items>
+<items version="2" />

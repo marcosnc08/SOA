@@ -7,15 +7,29 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.unlam.alarmaseguridad.AlarmActivatedActivity">
+    tools:context="com.unlam.alarmaseguridad.AlarmActivatedActivity"
+    android:background="@color/abc_input_method_navigation_guard">
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/imageView"
-        android:background="@color/abc_search_url_text_pressed"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Alarma Sonando"
+        android:id="@+id/txtAlarmaSonando"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="86dp"
+        android:foregroundTint="#bfbfbf"
+        android:textColor="@color/abc_background_cache_hint_selector_material_light"
+        android:textSize="@dimen/abc_action_bar_progress_bar_size" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Desactivar Alarma"
+        android:id="@+id/btnDesactivarAlarma"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/abc_action_bar_progress_bar_size"
+        android:background="@drawable/abc_dialog_material_background_light" />
 </RelativeLayout>
