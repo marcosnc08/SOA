@@ -83,7 +83,6 @@ public class Home extends Activity implements SensorEventListener {
 
     public void SyncBtnAlarmaActivadaState() {
         final ImageButton btnActivar = (ImageButton) findViewById(R.id.btnActivar);
-        final TextView txtTemperature = (TextView) findViewById(R.id.txtTemperature);
         final TextView txtGas = (TextView) findViewById(R.id.txtGas);
         Alarm alarm = Alarm.getInstance();
 
@@ -102,7 +101,6 @@ public class Home extends Activity implements SensorEventListener {
             setTxtAlarmStatus();
         }
 
-        txtTemperature.setText(alarm.getTemperature());
         txtGas.setText(alarm.getGas());
     }
 

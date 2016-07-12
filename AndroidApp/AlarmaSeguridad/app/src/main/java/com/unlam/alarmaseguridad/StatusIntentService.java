@@ -66,13 +66,11 @@ public class StatusIntentService extends IntentService {
                     Alarm alarm = Alarm.getInstance();
                     Boolean isActivated = getBooleanWebService("soa_alarma_activated", "activated");
                     Boolean isRinging = getBooleanWebService("soa_alarma_ringing", "ringing");
-                    String temperature = getStringWebService("soa_alarma_sensor_values", "temperature");
                     String gas = getStringWebService("soa_alarma_sensor_values", "gas");
                     String logs = getStringWebService("soa_alarma_logs", "logs");
 
                     alarm.setActivated(isActivated);
                     alarm.setRinging(isRinging);
-                    alarm.setTemperature(temperature);
                     alarm.setGas(gas);
                     alarm.setLogs(logs);
 

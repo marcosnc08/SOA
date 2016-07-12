@@ -52,36 +52,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Temperatura"
-        android:id="@+id/lblTemperature"
-        android:layout_marginTop="34dp"
-        android:layout_below="@+id/btnActivar"
-        android:layout_alignRight="@+id/btnPanic"
-        android:layout_alignEnd="@+id/btnPanic"
-        android:layout_marginRight="30dp"
-        android:layout_marginEnd="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/nivel_de_gas"
         android:id="@+id/lblGas"
-        android:layout_below="@+id/lblTemperature"
-        android:layout_alignLeft="@+id/lblTemperature"
-        android:layout_alignStart="@+id/lblTemperature"
-        android:layout_marginTop="27dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/txtTemperature"
-        android:layout_alignTop="@+id/lblTemperature"
-        android:layout_toRightOf="@+id/btnPanic"
-        android:layout_toEndOf="@+id/btnPanic"
-        android:minWidth="@dimen/abc_action_bar_stacked_max_height"
-        android:background="@color/accent_material_dark" />
+        android:layout_marginTop="27dp"
+        android:layout_below="@+id/btnActivar"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -90,9 +65,9 @@
         android:id="@+id/txtGas"
         android:background="@color/accent_material_dark"
         android:minWidth="@dimen/abc_action_bar_stacked_max_height"
-        android:layout_alignTop="@+id/lblGas"
-        android:layout_alignLeft="@+id/txtTemperature"
-        android:layout_alignStart="@+id/txtTemperature" />
+        android:layout_below="@+id/lblGas"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 
     <Button
         android:layout_width="@dimen/abc_action_bar_stacked_tab_max_width"
